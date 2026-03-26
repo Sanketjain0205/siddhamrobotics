@@ -1,0 +1,2494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Siddham Robotics — Hands-On STEM Education | Pune, India</title>
+  <meta name="description" content="Siddham Robotics is a hands-on STEM education initiative by Sanket Jain — teaching Robotics, Neuroscience, Arduino, AI, IoT, Python, Drones and more to school students, college students, and working professionals across India." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================
+       CSS VARIABLES & RESET
+    ============================================ */
+    :root {
+      --cyan: #00E5FF;
+      --cyan-dim: rgba(0,229,255,0.15);
+      --cyan-glow: rgba(0,229,255,0.4);
+      --gold: #C9A84C;
+      --gold-dim: rgba(201,168,76,0.2);
+      --white: #FFFFFF;
+      --muted: rgba(255,255,255,0.58);
+      --muted-2: rgba(255,255,255,0.35);
+      --navy: #0D1B4B;
+      --purple: #1A0533;
+      --teal: #003344;
+      --glass-bg: rgba(255,255,255,0.07);
+      --glass-bg-hover: rgba(255,255,255,0.11);
+      --glass-border: rgba(255,255,255,0.14);
+      --glass-shadow: 0 8px 32px rgba(0,0,0,0.35);
+      --glass-shadow-hover: 0 16px 48px rgba(0,0,0,0.5), 0 0 30px rgba(0,229,255,0.15);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-accent: 'Cormorant Garamond', serif;
+    }
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--white);
+      background: var(--navy);
+      overflow-x: hidden;
+      min-height: 100vh;
+      line-height: 1.65;
+    }
+
+    img { max-width: 100%; display: block; }
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; border: none; background: none; font-family: inherit; }
+    ul { list-style: none; }
+
+    /* ============================================
+       ANIMATED BACKGROUND
+    ============================================ */
+    #bg-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .bg-gradient {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      background: linear-gradient(135deg, #0D1B4B 0%, #1A0533 40%, #003344 80%, #0D1B4B 100%);
+      background-size: 400% 400%;
+      animation: auroraShift 18s ease infinite;
+    }
+
+    @keyframes auroraShift {
+      0%   { background-position: 0% 50%; }
+      33%  { background-position: 100% 0%; }
+      66%  { background-position: 50% 100%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* ============================================
+       GLOBAL LAYOUT HELPERS
+    ============================================ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .section {
+      padding: 100px 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    .section-label {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-label::after {
+      content: '';
+      display: block;
+      height: 1px;
+      width: 48px;
+      background: var(--cyan);
+      opacity: 0.5;
+    }
+
+    .section-headline {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      letter-spacing: 1.5px;
+      color: var(--white);
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    /* Glass card */
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      box-shadow: var(--glass-shadow);
+    }
+
+    .glass-hover {
+      transition: var(--transition);
+    }
+    .glass-hover:hover {
+      background: var(--glass-bg-hover);
+      box-shadow: var(--glass-shadow-hover);
+      border-color: rgba(0,229,255,0.35);
+      transform: translateY(-4px) scale(1.02);
+    }
+
+    /* Scroll-reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), transform 0.7s cubic-bezier(0.4,0,0.2,1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-delay-5 { transition-delay: 0.5s; }
+
+    /* ============================================
+       NAVIGATION
+    ============================================ */
+    #navbar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      z-index: 1000;
+      padding: 16px 0;
+      background: rgba(13,27,75,0.4);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: background 0.4s ease, padding 0.3s ease, box-shadow 0.4s ease;
+    }
+    #navbar.scrolled {
+      background: rgba(13,27,75,0.82);
+      padding: 10px 0;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+      border-bottom-color: rgba(0,229,255,0.1);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      letter-spacing: 2px;
+      color: var(--cyan);
+      text-shadow: 0 0 20px rgba(0,229,255,0.5);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+    }
+    .nav-links a {
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.75);
+      position: relative;
+      transition: color 0.25s;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 1.5px;
+      background: var(--cyan);
+      transition: width 0.25s ease;
+    }
+    .nav-links a:hover { color: var(--cyan); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-cta {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 9px 22px;
+      border-radius: 50px;
+      border: 1.5px solid var(--cyan);
+      color: var(--cyan) !important;
+      background: rgba(0,229,255,0.05);
+      transition: var(--transition) !important;
+    }
+    .nav-cta:hover {
+      background: var(--cyan) !important;
+      color: #000 !important;
+      box-shadow: 0 0 20px rgba(0,229,255,0.4);
+    }
+    .nav-cta::after { display: none !important; }
+
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--white);
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+    .hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.active span:nth-child(2) { opacity: 0; }
+    .hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-menu {
+      display: none;
+      background: rgba(13,27,75,0.96);
+      backdrop-filter: blur(24px);
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding: 24px;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.8);
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: color 0.2s;
+    }
+    .mobile-menu a:hover { color: var(--cyan); }
+
+    /* ============================================
+       SECTION 1 — HERO
+    ============================================ */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-logo-wrap {
+      margin-bottom: 36px;
+    }
+    /* REPLACE WITH LOGO */
+    .hero-logo-fallback {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      letter-spacing: 5px;
+      color: var(--cyan);
+      opacity: 0.7;
+      text-shadow: 0 0 20px rgba(0,229,255,0.5);
+    }
+    .hero-logo-img {
+      max-height: 72px;
+      margin: 0 auto;
+      /* REPLACE WITH LOGO: <img src="your-logo.png" alt="Siddham Robotics Logo" /> */
+      display: none; /* Remove this line and uncomment the img tag above when logo is ready */
+    }
+
+    .hero-headline {
+      font-family: var(--font-display);
+      font-size: clamp(3.5rem, 10vw, 8rem);
+      line-height: 0.95;
+      letter-spacing: 3px;
+      color: var(--white);
+      margin-bottom: 0;
+    }
+
+    .hero-typewriter-wrap {
+      font-family: var(--font-display);
+      font-size: clamp(3.5rem, 10vw, 8rem);
+      letter-spacing: 3px;
+      color: var(--cyan);
+      text-shadow: 0 0 40px rgba(0,229,255,0.5);
+      line-height: 1;
+      margin-bottom: 28px;
+      min-height: clamp(3.5rem, 10vw, 8rem);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #typewriter-text {
+      display: inline-block;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .cursor-blink {
+      display: inline-block;
+      width: 4px;
+      height: 0.8em;
+      background: var(--cyan);
+      margin-left: 4px;
+      vertical-align: middle;
+      animation: blink 0.85s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      color: rgba(255,255,255,0.82);
+      max-width: 620px;
+      margin: 0 auto 14px;
+      font-weight: 400;
+      line-height: 1.7;
+    }
+
+    .hero-hindi {
+      font-family: var(--font-accent);
+      font-style: italic;
+      font-size: 1.15rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .hero-hindi-translation {
+      font-size: 0.75rem;
+      color: var(--muted-2);
+      letter-spacing: 0.5px;
+      margin-bottom: 40px;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 64px;
+    }
+
+    .btn-primary {
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 15px 36px;
+      border-radius: 50px;
+      background: var(--cyan);
+      color: #000;
+      transition: var(--transition);
+      box-shadow: 0 4px 24px rgba(0,229,255,0.35);
+    }
+    .btn-primary:hover {
+      background: #fff;
+      box-shadow: 0 6px 36px rgba(0,229,255,0.5);
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 14px 34px;
+      border-radius: 50px;
+      border: 1.5px solid rgba(255,255,255,0.4);
+      color: var(--white);
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(8px);
+      transition: var(--transition);
+    }
+    .btn-outline:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background: rgba(0,229,255,0.08);
+      transform: translateY(-2px);
+    }
+
+    /* Stats */
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 60px;
+      flex-wrap: wrap;
+      margin-bottom: 60px;
+    }
+    .stat-item { text-align: center; }
+    .stat-number {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      color: var(--cyan);
+      letter-spacing: 1px;
+      line-height: 1;
+      text-shadow: 0 0 20px rgba(0,229,255,0.4);
+    }
+    .stat-label {
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* Video section */
+    .hero-video-wrap {
+      width: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 16px 64px rgba(0,0,0,0.5);
+    }
+    /* REPLACE WITH EVENT REEL VIDEO */
+    .video-placeholder {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: linear-gradient(135deg, rgba(0,229,255,0.08) 0%, rgba(26,5,51,0.8) 60%, rgba(0,51,68,0.6) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+    }
+    .video-placeholder::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300E5FF' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .video-play-btn {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: rgba(0,229,255,0.15);
+      border: 2px solid rgba(0,229,255,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      z-index: 2;
+    }
+    .video-play-btn:hover {
+      background: rgba(0,229,255,0.3);
+      transform: scale(1.1);
+    }
+    .video-overlay-text {
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--cyan);
+      position: relative;
+      z-index: 2;
+    }
+    /* Actual video element when replaced */
+    .hero-video-wrap video {
+      width: 100%;
+      display: block;
+    }
+
+    /* ============================================
+       SECTION 2 — ABOUT
+    ============================================ */
+    #about .about-card {
+      padding: 64px;
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .about-body {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.78);
+      line-height: 1.85;
+      max-width: 720px;
+      margin: 0 auto 24px;
+    }
+    .about-hindi {
+      font-family: var(--font-accent);
+      font-style: italic;
+      font-size: 1.2rem;
+      color: var(--gold);
+    }
+
+    /* ============================================
+       SECTION 3 — FOUNDER
+    ============================================ */
+    #founder .founder-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .founder-photo-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .founder-photo-ring {
+      width: 240px; height: 240px;
+      border-radius: 50%;
+      border: 2.5px solid var(--cyan);
+      padding: 6px;
+      box-shadow: 0 0 40px rgba(0,229,255,0.2), 0 0 80px rgba(0,229,255,0.08);
+      position: relative;
+    }
+    .founder-photo-inner {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(0,229,255,0.12) 0%, rgba(26,5,51,0.9) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+    }
+    /* REPLACE WITH SANKET PHOTO */
+    .founder-photo-inner img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      /* <img src="sanket.jpg" alt="Sanket Jain" /> */
+    }
+
+    .founder-name {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      letter-spacing: 2px;
+      color: var(--gold);
+    }
+    .founder-title {
+      font-size: 0.82rem;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .founder-text-col .section-headline { margin-bottom: 24px; }
+    .founder-bio {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.76);
+      line-height: 1.85;
+    }
+    .founder-bio p + p { margin-top: 18px; }
+
+    /* ============================================
+       SECTION 4 — WHAT WE TEACH
+    ============================================ */
+    #what-we-teach .teach-header { margin-bottom: 56px; }
+
+    .teach-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .teach-card {
+      padding: 32px 28px;
+      border-radius: var(--radius);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: default;
+    }
+    .teach-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0;
+      width: 4px; height: 100%;
+      background: var(--cyan);
+      opacity: 0.6;
+      transition: opacity 0.3s;
+    }
+    .teach-card:hover {
+      background: var(--glass-bg-hover);
+      box-shadow: var(--glass-shadow-hover);
+      border-color: rgba(0,229,255,0.4);
+      transform: translateY(-5px) scale(1.02);
+    }
+    .teach-card:hover::before { opacity: 1; }
+
+    .teach-emoji {
+      font-size: 2.4rem;
+      margin-bottom: 16px;
+      display: block;
+      line-height: 1;
+    }
+    .teach-name {
+      font-family: var(--font-body);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+    .teach-desc {
+      font-size: 0.87rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    /* ============================================
+       SECTION 5 — WHO WE TEACH
+    ============================================ */
+    #who-we-teach .who-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 36px;
+    }
+
+    .who-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: rgba(13,27,75,0.6);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      transition: var(--transition);
+    }
+    .who-card:hover {
+      box-shadow: var(--glass-shadow-hover);
+      border-color: rgba(0,229,255,0.35);
+      transform: translateY(-5px) scale(1.02);
+    }
+
+    .who-card-stripe {
+      height: 5px;
+      background: linear-gradient(90deg, var(--cyan) 0%, rgba(0,229,255,0.3) 100%);
+    }
+    .who-card-body {
+      padding: 36px 32px;
+    }
+    .who-icon {
+      font-size: 2.6rem;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .who-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 8px;
+    }
+    .who-name {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      letter-spacing: 1px;
+      color: var(--white);
+      margin-bottom: 14px;
+      line-height: 1.2;
+    }
+    .who-desc {
+      font-size: 0.92rem;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.7;
+    }
+    .who-tag {
+      display: inline-block;
+      margin-top: 20px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px;
+      background: rgba(201,168,76,0.15);
+      border: 1px solid rgba(201,168,76,0.4);
+      color: var(--gold);
+    }
+
+    .who-cta-text {
+      text-align: center;
+      font-family: var(--font-accent);
+      font-style: italic;
+      font-size: 1.15rem;
+      color: var(--cyan);
+    }
+
+    /* ============================================
+       SECTION 6 — SESSION FORMATS
+    ============================================ */
+    #sessions .format-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .format-card {
+      padding: 30px 20px;
+      border-radius: var(--radius);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      text-align: center;
+      transition: var(--transition);
+    }
+    .format-card:hover {
+      background: var(--glass-bg-hover);
+      border-color: rgba(0,229,255,0.35);
+      box-shadow: var(--glass-shadow-hover);
+      transform: translateY(-5px) scale(1.03);
+    }
+    .format-emoji {
+      font-size: 2.2rem;
+      margin-bottom: 14px;
+      display: block;
+    }
+    .format-name {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      letter-spacing: 1px;
+      color: var(--cyan);
+      margin-bottom: 10px;
+    }
+    .format-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .format-note {
+      text-align: center;
+      font-family: var(--font-accent);
+      font-style: italic;
+      font-size: 1.15rem;
+      color: var(--gold);
+      line-height: 1.8;
+    }
+
+    /* Mobile horizontal scroll for formats */
+    @media (max-width: 767px) {
+      #sessions .format-grid {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 16px;
+        padding-bottom: 16px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--cyan-dim) transparent;
+      }
+      .format-card {
+        min-width: 200px;
+        scroll-snap-align: start;
+        flex-shrink: 0;
+      }
+    }
+
+    /* ============================================
+       SECTION 7 — GALLERY
+    ============================================ */
+    #gallery .gallery-grid {
+      columns: 3;
+      column-gap: 16px;
+      margin-bottom: 0;
+    }
+
+    .gallery-item {
+      break-inside: avoid;
+      margin-bottom: 16px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+    }
+    .gallery-item:hover {
+      border-color: rgba(0,229,255,0.4);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(0,229,255,0.1);
+      transform: scale(1.02);
+    }
+
+    /* REPLACE WITH EVENT PHOTOS */
+    .gallery-placeholder {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.78rem;
+      color: var(--muted-2);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: 500;
+      position: relative;
+      overflow: hidden;
+      min-height: 160px;
+    }
+    .gallery-placeholder::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0.8;
+    }
+    .gallery-placeholder span { position: relative; z-index: 1; }
+
+    .gallery-item:nth-child(1) .gallery-placeholder { aspect-ratio: 4/3; }
+    .gallery-item:nth-child(1) .gallery-placeholder::before { background: linear-gradient(135deg, #0a2040, #001a2e); }
+
+    .gallery-item:nth-child(2) .gallery-placeholder { aspect-ratio: 3/4; }
+    .gallery-item:nth-child(2) .gallery-placeholder::before { background: linear-gradient(160deg, #150b2e, #001a2e); }
+
+    .gallery-item:nth-child(3) .gallery-placeholder { aspect-ratio: 1/1; }
+    .gallery-item:nth-child(3) .gallery-placeholder::before { background: linear-gradient(120deg, #001a2e, #0a2040); }
+
+    .gallery-item:nth-child(4) .gallery-placeholder { aspect-ratio: 4/3; }
+    .gallery-item:nth-child(4) .gallery-placeholder::before { background: linear-gradient(200deg, #0a2040, #150b2e); }
+
+    .gallery-item:nth-child(5) .gallery-placeholder { aspect-ratio: 16/9; }
+    .gallery-item:nth-child(5) .gallery-placeholder::before { background: linear-gradient(135deg, #001a2e, #0a2040); }
+
+    .gallery-item:nth-child(6) .gallery-placeholder { aspect-ratio: 3/4; }
+    .gallery-item:nth-child(6) .gallery-placeholder::before { background: linear-gradient(100deg, #150b2e, #0a2040); }
+
+    .gallery-item:nth-child(7) .gallery-placeholder { aspect-ratio: 4/3; }
+    .gallery-item:nth-child(7) .gallery-placeholder::before { background: linear-gradient(145deg, #0a2040, #001a2e); }
+
+    .gallery-item:nth-child(8) .gallery-placeholder { aspect-ratio: 1/1; }
+    .gallery-item:nth-child(8) .gallery-placeholder::before { background: linear-gradient(170deg, #001a2e, #150b2e); }
+
+    .gallery-item:nth-child(9) .gallery-placeholder { aspect-ratio: 3/4; }
+    .gallery-item:nth-child(9) .gallery-placeholder::before { background: linear-gradient(120deg, #0a2040, #001a2e); }
+
+    /* Lightbox */
+    #lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    #lightbox.open { display: flex; }
+    #lightbox-img {
+      max-width: 90vw;
+      max-height: 88vh;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,0.15);
+      object-fit: contain;
+    }
+    #lightbox-close {
+      position: absolute;
+      top: 20px; right: 24px;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--white);
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    #lightbox-close:hover { background: rgba(0,229,255,0.2); border-color: var(--cyan); }
+
+    /* ============================================
+       SECTION 8 — TESTIMONIALS
+    ============================================ */
+    #testimonials .testi-section-label { margin-bottom: 12px; }
+    .testi-sub {
+      font-family: var(--font-accent);
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--muted);
+      margin-bottom: 56px;
+    }
+
+    .testi-videos {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 64px;
+    }
+
+    .testi-video-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: var(--glass-shadow);
+      background: var(--glass-bg);
+      transition: var(--transition);
+    }
+    .testi-video-card:hover {
+      border-color: rgba(0,229,255,0.3);
+      box-shadow: var(--glass-shadow-hover);
+    }
+
+    /* REPLACE WITH VIDEO EMBEDS */
+    .testi-video-placeholder {
+      aspect-ratio: 16/9;
+      background: linear-gradient(135deg, rgba(0,229,255,0.06) 0%, rgba(26,5,51,0.8) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+    .testi-play {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: rgba(0,229,255,0.12);
+      border: 2px solid rgba(0,229,255,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .testi-play:hover { background: rgba(0,229,255,0.25); transform: scale(1.1); }
+    .testi-video-caption {
+      padding: 14px 20px;
+      font-size: 0.84rem;
+      color: var(--muted);
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+
+    /* Carousel */
+    .carousel-wrap {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: 20px;
+      transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .quote-card {
+      min-width: 360px;
+      padding: 40px 36px;
+      border-radius: var(--radius);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      flex-shrink: 0;
+    }
+
+    .quote-mark {
+      font-family: var(--font-accent);
+      font-size: 4rem;
+      color: var(--cyan);
+      line-height: 0.5;
+      margin-bottom: 24px;
+      display: block;
+      opacity: 0.7;
+    }
+    .quote-text {
+      font-family: var(--font-accent);
+      font-style: italic;
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.8;
+      margin-bottom: 24px;
+    }
+    .quote-author {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.5px;
+    }
+    .quote-role {
+      font-size: 0.76rem;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .carousel-controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 28px;
+    }
+    .carousel-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      color: var(--white);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .carousel-btn:hover {
+      background: rgba(0,229,255,0.15);
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    /* ============================================
+       SECTION 9 — CONTACT
+    ============================================ */
+    #contact .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    .contact-headline { margin-bottom: 8px; }
+    .contact-hindi {
+      font-family: var(--font-accent);
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .contact-hindi-trans {
+      font-size: 0.74rem;
+      color: var(--muted-2);
+      margin-bottom: 48px;
+    }
+
+    .contact-info-card {
+      padding: 40px 36px;
+    }
+    .contact-info-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      letter-spacing: 1px;
+      color: var(--white);
+      margin-bottom: 32px;
+    }
+    .contact-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .contact-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .contact-detail {
+      font-size: 0.92rem;
+      color: rgba(255,255,255,0.78);
+      line-height: 1.6;
+    }
+    .contact-detail a {
+      color: var(--cyan);
+      transition: opacity 0.2s;
+    }
+    .contact-detail a:hover { opacity: 0.75; }
+
+    .social-icons {
+      display: flex;
+      gap: 12px;
+      margin-top: 32px;
+    }
+    .social-icon {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .social-icon:hover {
+      background: rgba(0,229,255,0.12);
+      border-color: var(--cyan);
+      transform: translateY(-3px);
+    }
+
+    /* Form */
+    .contact-form-card { padding: 40px 36px; }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 13px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+      appearance: none;
+    }
+    .form-group select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2300E5FF' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 40px;
+      cursor: pointer;
+    }
+    .form-group select option {
+      background: #0D1B4B;
+      color: var(--white);
+    }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: rgba(255,255,255,0.25);
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(0,229,255,0.1);
+    }
+    .form-group textarea { resize: vertical; min-height: 110px; }
+
+    .form-submit {
+      width: 100%;
+      padding: 16px;
+      border-radius: 10px;
+      background: var(--cyan);
+      color: #000;
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+      box-shadow: 0 4px 20px rgba(0,229,255,0.3);
+    }
+    .form-submit:hover {
+      background: #fff;
+      box-shadow: 0 6px 32px rgba(0,229,255,0.45);
+      transform: translateY(-2px);
+    }
+    .form-submit:active { transform: translateY(0); }
+
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .form-success.show { display: block; }
+    .form-success-emoji { font-size: 3rem; margin-bottom: 16px; }
+    .form-success-title {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+      color: var(--cyan);
+      margin-bottom: 12px;
+    }
+    .form-success-text {
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+
+    /* ============================================
+       FLOATING ELEMENTS
+    ============================================ */
+    #whatsapp-float {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 900;
+      width: 58px; height: 58px;
+      border-radius: 50%;
+      background: #25D366;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 24px rgba(37,211,102,0.5);
+      transition: var(--transition);
+      text-decoration: none;
+      font-size: 1.5rem;
+    }
+    #whatsapp-float:hover {
+      transform: scale(1.12) translateY(-3px);
+      box-shadow: 0 8px 32px rgba(37,211,102,0.6);
+    }
+    /* WhatsApp SVG icon */
+    #whatsapp-float svg {
+      width: 28px; height: 28px;
+      fill: #fff;
+    }
+
+    #scroll-top {
+      position: fixed;
+      bottom: 28px;
+      left: 28px;
+      z-index: 900;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: var(--glass-bg);
+      border: 1px solid rgba(0,229,255,0.3);
+      color: var(--cyan);
+      font-size: 1.1rem;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      backdrop-filter: blur(12px);
+    }
+    #scroll-top.show { display: flex; }
+    #scroll-top:hover {
+      background: rgba(0,229,255,0.12);
+      border-color: var(--cyan);
+      transform: translateY(-3px);
+    }
+
+    /* ============================================
+       FOOTER
+    ============================================ */
+    footer {
+      background: rgba(6,12,35,0.96);
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding: 64px 0 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap: 48px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .footer-logo-name {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      letter-spacing: 2px;
+      color: var(--cyan);
+      text-shadow: 0 0 16px rgba(0,229,255,0.3);
+      margin-bottom: 12px;
+    }
+    .footer-tagline {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 260px;
+    }
+
+    .footer-col-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 20px;
+    }
+    .footer-links { display: flex; flex-direction: column; gap: 12px; }
+    .footer-links a {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.6);
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--cyan); }
+
+    .footer-social-grid {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .footer-social-icon {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.05rem;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .footer-social-icon:hover {
+      background: rgba(0,229,255,0.1);
+      border-color: var(--cyan);
+      color: var(--cyan);
+      transform: translateY(-3px);
+    }
+
+    .footer-bottom {
+      margin-top: 48px;
+      padding: 20px 24px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      text-align: center;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.5px;
+    }
+
+    /* ============================================
+       RESPONSIVE
+    ============================================ */
+    @media (max-width: 1100px) {
+      .teach-grid { grid-template-columns: repeat(3, 1fr); }
+      #sessions .format-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 900px) {
+      #founder .founder-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 40px;
+      }
+      .founder-photo-col { margin-bottom: 0; }
+      .section-label { justify-content: center; }
+
+      .who-grid { grid-template-columns: 1fr 1fr !important; }
+      .testi-videos { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr !important; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .section { padding: 72px 0; }
+      #about .about-card { padding: 36px 24px; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .teach-grid { grid-template-columns: 1fr 1fr; }
+      #sessions .format-grid { grid-template-columns: repeat(3, 1fr); }
+      .who-grid { grid-template-columns: 1fr !important; }
+      .gallery-grid { columns: 2; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+      .hero-stats { gap: 32px; }
+      .contact-info-card, .contact-form-card { padding: 28px 20px; }
+    }
+
+    @media (max-width: 480px) {
+      .teach-grid { grid-template-columns: 1fr; }
+      .gallery-grid { columns: 1; }
+      .quote-card { min-width: 280px; }
+      .hero-cta-group { flex-direction: column; align-items: center; }
+      .btn-primary, .btn-outline { width: 100%; max-width: 280px; text-align: center; }
+    }
+
+    /* ============================================
+       DIVIDER DECORATION
+    ============================================ */
+    .section-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,229,255,0.2), transparent);
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Animated aurora background -->
+  <div class="bg-gradient"></div>
+  <!-- Particle / neural network canvas -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- ============================================================
+       LIGHTBOX
+  ============================================================ -->
+  <div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo lightbox">
+    <button id="lightbox-close" aria-label="Close lightbox">✕</button>
+    <!-- Lightbox shows gallery-placeholder background as a color block since photos are placeholders -->
+    <div id="lightbox-content" style="display:flex;align-items:center;justify-content:center;width:80vw;max-width:800px;aspect-ratio:4/3;border-radius:16px;background:linear-gradient(135deg,rgba(0,229,255,0.08),rgba(26,5,51,0.9));border:1px solid rgba(0,229,255,0.2);font-size:0.9rem;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;">Photo coming soon</div>
+  </div>
+
+  <!-- ============================================================
+       NAVIGATION
+  ============================================================ -->
+  <nav id="navbar" role="navigation" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="#hero" class="nav-logo">Siddham Robotics</a>
+      <ul class="nav-links">
+        <li><a href="#hero">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#what-we-teach">What We Teach</a></li>
+        <li><a href="#sessions">Sessions</a></li>
+        <li><a href="#testimonials">Testimonials</a></li>
+        <li><a href="#contact" class="nav-cta">Book a Session</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobile-menu" role="menu">
+      <a href="#hero" role="menuitem">Home</a>
+      <a href="#about" role="menuitem">About</a>
+      <a href="#what-we-teach" role="menuitem">What We Teach</a>
+      <a href="#sessions" role="menuitem">Sessions</a>
+      <a href="#testimonials" role="menuitem">Testimonials</a>
+      <a href="#contact" role="menuitem">Contact</a>
+    </div>
+  </nav>
+
+  <!-- ============================================================
+       SECTION 1 — HERO
+  ============================================================ -->
+  <section id="hero">
+    <!-- LOGO -->
+    <div class="hero-logo-wrap reveal">
+      <!-- REPLACE WITH LOGO: Remove the fallback below and add: <img src="your-logo.png" alt="Siddham Robotics Logo" class="hero-logo-img" /> -->
+      <div class="hero-logo-fallback">✦ SIDDHAM ROBOTICS ✦</div>
+    </div>
+
+    <div class="container" style="display:flex;flex-direction:column;align-items:center;">
+      <!-- Main headline -->
+      <div class="hero-headline reveal reveal-delay-1">WE TEACH</div>
+
+      <!-- Typewriter cycling keywords -->
+      <div class="hero-typewriter-wrap reveal reveal-delay-2">
+        <span id="typewriter-text"></span><span class="cursor-blink"></span>
+      </div>
+
+      <!-- Subheadline -->
+      <p class="hero-sub reveal reveal-delay-2">
+        Hands-on STEM education for school students, college students,
+        and working professionals — online and across India.
+      </p>
+
+      <!-- Hindi touch -->
+      <p class="hero-hindi reveal reveal-delay-3">"Kyunki curiosity sirf ek sheher mein nahi rehti."</p>
+      <p class="hero-hindi-translation reveal reveal-delay-3">Because curiosity doesn't live in one city.</p>
+
+      <!-- CTA Buttons -->
+      <div class="hero-cta-group reveal reveal-delay-3">
+        <a href="#what-we-teach" class="btn-primary">Explore What We Teach</a>
+        <a href="#contact" class="btn-outline">Book a Session</a>
+      </div>
+
+      <!-- Stats counters -->
+      <div class="hero-stats reveal reveal-delay-4">
+        <div class="stat-item">
+          <div class="stat-number" data-target="1000" data-suffix="+">0</div>
+          <div class="stat-label">Students Taught</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" data-target="9" data-suffix="">0</div>
+          <div class="stat-label">STEM Domains</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" data-target="0" data-suffix="" data-text="Online + Pan India">—</div>
+          <div class="stat-label">Reach</div>
+        </div>
+      </div>
+
+      <!-- Video reel -->
+      <div class="hero-video-wrap reveal reveal-delay-5">
+        <!-- REPLACE WITH EVENT REEL VIDEO SRC:
+          Remove the .video-placeholder div below and add:
+          <video autoplay muted loop playsinline>
+            <source src="your-reel.mp4" type="video/mp4" />
+          </video>
+        -->
+        <div class="video-placeholder">
+          <div class="video-play-btn">▶</div>
+          <div class="video-overlay-text">Watch our Graduation Day →</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ============================================================
+       SECTION 2 — ABOUT SIDDHAM ROBOTICS
+  ============================================================ -->
+  <section id="about" class="section">
+    <div class="container">
+      <div class="about-card glass reveal">
+        <div class="section-label" style="justify-content:center;">WHO WE ARE</div>
+        <h2 class="section-headline" style="margin-bottom:32px;">Real hardware. Real code. Real understanding.</h2>
+        <p class="about-body">
+          Siddham Robotics is a hands-on STEM education initiative that believes learning happens best when you build, break, and rebuild things with your own hands. We don't teach from slides. We hand students real hardware, real electrodes, and real code — and let them experience science the way it was always meant to be felt.
+        </p>
+        <p class="about-body">
+          From a single 2-hour seminar to a structured 6-month course — we design every program around the student's age, goal, and available time. We work online and travel anywhere in India where curiosity is celebrated.
+        </p>
+        <p class="about-hindi">"Yeh sirf ek course nahi hai — yeh ek experience hai."</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ============================================================
+       SECTION 3 — FOUNDER
+  ============================================================ -->
+  <section id="founder" class="section">
+    <div class="container">
+      <div class="founder-grid">
+        <!-- Left: Photo -->
+        <div class="founder-photo-col reveal">
+          <div class="founder-photo-ring">
+            <div class="founder-photo-inner">
+              <!-- REPLACE WITH SANKET PHOTO:
+                Remove the emoji below and add:
+                <img src="sanket.jpg" alt="Sanket Jain, Founder of Siddham Robotics" />
+              -->
+              🧑‍💻
+            </div>
+          </div>
+          <div class="founder-name">Sanket Jain</div>
+          <div class="founder-title">Founder &amp; Lead Educator<br>Siddham Robotics</div>
+        </div>
+
+        <!-- Right: Bio -->
+        <div class="founder-text-col reveal reveal-delay-2">
+          <div class="section-label">THE PERSON BEHIND IT</div>
+          <h2 class="section-headline">Not just a teacher.<br>A fellow curious mind.</h2>
+          <div class="founder-bio">
+            <p>I started Siddham Robotics because I believe every child deserves to experience the magic of building something real. Not reading about circuits — building them. Not hearing about brain signals — seeing their own on a screen.</p>
+            <p>I've personally taught 1,000+ students across workshops, structured courses, and live sessions. Every program I design comes from one simple question: what would have made me fall in love with this earlier?</p>
+            <p>I teach Electronics, Arduino, Robotics, AI, Neuroscience, Python, IoT, Drones, and 3D Printing. And I bring this to schools, colleges, and anyone who's curious — online or in person, wherever you are in India.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ============================================================
+       SECTION 4 — WHAT WE TEACH
+  ============================================================ -->
+  <section id="what-we-teach" class="section">
+    <div class="container">
+      <div class="teach-header reveal">
+        <div class="section-label">WHAT WE TEACH</div>
+        <h2 class="section-headline">9 Domains. One mission. Make it real.</h2>
+      </div>
+      <div class="teach-grid">
+        <!-- Card 1 -->
+        <div class="teach-card glass-hover reveal reveal-delay-1">
+          <span class="teach-emoji">⚡</span>
+          <div class="teach-name">Electronics &amp; Circuits</div>
+          <div class="teach-desc">How electricity works. Real circuits on real breadboards — not diagrams on paper.</div>
+        </div>
+        <!-- Card 2 -->
+        <div class="teach-card glass-hover reveal reveal-delay-2">
+          <span class="teach-emoji">🤖</span>
+          <div class="teach-name">Arduino Programming</div>
+          <div class="teach-desc">Microcontrollers, sensors, and code that actually runs and does something real.</div>
+        </div>
+        <!-- Card 3 -->
+        <div class="teach-card glass-hover reveal reveal-delay-3">
+          <span class="teach-emoji">🦾</span>
+          <div class="teach-name">Robotics Systems</div>
+          <div class="teach-desc">Sensors + controllers + actuators. Engineering that moves, responds, and thinks.</div>
+        </div>
+        <!-- Card 4 -->
+        <div class="teach-card glass-hover reveal reveal-delay-1">
+          <span class="teach-emoji">🧠</span>
+          <div class="teach-name">Machine Learning &amp; AI</div>
+          <div class="teach-desc">What AI actually means — explained and experienced in simple, hands-on terms.</div>
+        </div>
+        <!-- Card 5 -->
+        <div class="teach-card glass-hover reveal reveal-delay-2">
+          <span class="teach-emoji">🧬</span>
+          <div class="teach-name">Neuroscience &amp; Brain Signals</div>
+          <div class="teach-desc">EMG, EEG, EOG — read your body's own electrical signals live on a screen.</div>
+        </div>
+        <!-- Card 6 -->
+        <div class="teach-card glass-hover reveal reveal-delay-3">
+          <span class="teach-emoji">🐍</span>
+          <div class="teach-name">Python Programming</div>
+          <div class="teach-desc">From the first line of code to real projects in data, automation, and AI.</div>
+        </div>
+        <!-- Card 7 -->
+        <div class="teach-card glass-hover reveal reveal-delay-1">
+          <span class="teach-emoji">📡</span>
+          <div class="teach-name">IoT &amp; ESP8266</div>
+          <div class="teach-desc">Connect devices to the internet. Build smart systems that talk to the world.</div>
+        </div>
+        <!-- Card 8 -->
+        <div class="teach-card glass-hover reveal reveal-delay-2">
+          <span class="teach-emoji">🖨️</span>
+          <div class="teach-name">3D Printing &amp; Design</div>
+          <div class="teach-desc">Design it digitally. Print it physically. Hold your idea in your hands.</div>
+        </div>
+        <!-- Card 9 -->
+        <div class="teach-card glass-hover reveal reveal-delay-3">
+          <span class="teach-emoji">🚁</span>
+          <div class="teach-name">Drone Technology</div>
+          <div class="teach-desc">How drones fly. The electronics behind UAVs. Aerial systems from first principles.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ============================================================
+       SECTION 5 — WHO WE TEACH
+  ============================================================ -->
+  <section id="who-we-teach" class="section">
+    <div class="container">
+      <div class="reveal" style="margin-bottom:48px;">
+        <div class="section-label">WHO WE TEACH</div>
+        <h2 class="section-headline">From 10-year-olds to working professionals.</h2>
+      </div>
+      <div class="who-grid">
+        <!-- Card 1: School students -->
+        <div class="who-card reveal reveal-delay-1">
+          <div class="who-card-stripe"></div>
+          <div class="who-card-body">
+            <span class="who-icon">🏫</span>
+            <div class="who-label">Most Popular</div>
+            <div class="who-name">School Students<br><span style="font-size:0.9rem;color:var(--muted);">Age 10 – 17</span></div>
+            <div class="who-desc">Hands-on experiments, robotics kits, and fun projects that build real curiosity and technical confidence early. We make STEM feel like play — because the best learning does.</div>
+            <span class="who-tag">Most Popular</span>
+          </div>
+        </div>
+        <!-- Card 2: College students -->
+        <div class="who-card reveal reveal-delay-2">
+          <div class="who-card-stripe"></div>
+          <div class="who-card-body">
+            <span class="who-icon">🎓</span>
+            <div class="who-label">Higher Education</div>
+            <div class="who-name">College Students<br><span style="font-size:0.9rem;color:var(--muted);">UG &amp; PG</span></div>
+            <div class="who-desc">Deep-dive workshops and project-based learning. Industry-relevant skills that actually matter for placements and career growth — not just another theory class.</div>
+          </div>
+        </div>
+        <!-- Card 3: Professionals -->
+        <div class="who-card reveal reveal-delay-3">
+          <div class="who-card-stripe"></div>
+          <div class="who-card-body">
+            <span class="who-icon">💼</span>
+            <div class="who-label">Professionals</div>
+            <div class="who-name">Working<br>Professionals</div>
+            <div class="who-desc">Short, focused upskilling sessions. IoT, AI, Python — practical knowledge you can apply at work from day one, without disrupting your routine.</div>
+          </div>
+        </div>
+      </div>
+      <p class="who-cta-text reveal" style="margin-top:12px;">
+        Not sure which is right for you? Just reach out — we'll figure it out together.
+      </p>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ============================================================
+       SECTION 6 — SESSION FORMATS
+  ============================================================ -->
+  <section id="sessions" class="section">
+    <div class="container">
+      <div class="reveal" style="margin-bottom:48px;">
+        <div class="section-label">HOW WE WORK</div>
+        <h2 class="section-headline">One session or six months — your call.</h2>
+      </div>
+      <div class="format-grid">
+        <div class="format-card reveal reveal-delay-1">
+          <span class="format-emoji">⏱️</span>
+          <div class="format-name">Seminar</div>
+          <div class="format-desc">1–2 hours. A powerful, high-energy intro to any STEM domain.</div>
+        </div>
+        <div class="format-card reveal reveal-delay-2">
+          <span class="format-emoji">🛠️</span>
+          <div class="format-name">Workshop</div>
+          <div class="format-desc">Half or full day. Hands-on building from minute one — no slides, just action.</div>
+        </div>
+        <div class="format-card reveal reveal-delay-3">
+          <span class="format-emoji">🚀</span>
+          <div class="format-name">Bootcamp</div>
+          <div class="format-desc">5 intensive days. Deep skill-building that transforms how students think.</div>
+        </div>
+        <div class="format-card reveal reveal-delay-4">
+          <span class="format-emoji">📅</span>
+          <div class="format-name">Monthly Course</div>
+          <div class="format-desc">4–8 weeks. Structured, progressive learning with real checkpoints.</div>
+        </div>
+        <div class="format-card reveal reveal-delay-5">
+          <span class="format-emoji">🎓</span>
+          <div class="format-name">Full Course</div>
+          <div class="format-desc">3–6 months. A complete, foundation-building journey from zero to confident.</div>
+        </div>
+      </div>
+      <p class="format-note reveal" style="margin-top:16px;">
+        "Every program is designed from scratch.<br>No two sessions are ever the same."
+      </p>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ============================================================
+       SECTION 7 — GALLERY
+  ============================================================ -->
+  <section id="gallery" class="section">
+    <div class="container">
+      <div class="reveal" style="margin-bottom:48px;">
+        <div class="section-label">FROM THE FIELD</div>
+        <h2 class="section-headline">Real students. Real experiments. Real moments.</h2>
+      </div>
+      <div class="gallery-grid reveal">
+        <!-- REPLACE WITH EVENT PHOTO 1 -->
+        <div class="gallery-item" data-index="0">
+          <div class="gallery-placeholder"><span>Photo Coming Soon</span></div>
+        </div>
+        <!-- REPLACE WITH EVENT PHOTO 2 -->
+        <div class="gallery-item" data-index="1">
+          <div class="gallery-placeholder"><span>Photo Coming Soon</span></div>
+        </div>
+        <!-- REPLACE WITH EVENT PHOTO 3 -->
+        <div class="gallery-item" data-index="2">
+          <div class="gallery-placeholder"><span>Photo Coming Soon</span></div>
+        </div>
+        <!-- REPLACE WITH EVENT PHOTO 4 -->
+        <div class="gallery-item" data-index="3">
+          <div class="gallery-placeholder"><span>Photo Coming Soon</span></div>
+        </div>
+        <!-- REPLACE WITH EVENT PHOTO 5 -->
+        <div class="gallery-item" data-index="4">
+          <div class="gallery-placeholder"><span>Photo Coming Soon</span></div>
+        </div>
+        <!-- REPLACE WITH EVENT PHOTO 6 -->
+        <div class="gallery-item" data-index="5">
+          <div class="gallery-placeholder"><span>Photo Coming Soon</span></div>
+        </div>
+        <!-- REPLACE WITH EVENT PHOTO 7 -->
+        <div class="gallery-item" data-index="6">
+          <div class="gallery-placeholder"><span>Photo Coming Soon</span></div>
+        </div>
+        <!-- REPLACE WITH EVENT PHOTO 8 -->
+        <div class="gallery-item" data-index="7">
+          <div class="gallery-placeholder"><span>Photo Coming Soon</span></div>
+        </div>
+        <!-- REPLACE WITH EVENT PHOTO 9 -->
+        <div class="gallery-item" data-index="8">
+          <div class="gallery-placeholder"><span>Photo Coming Soon</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ============================================================
+       SECTION 8 — TESTIMONIALS
+  ============================================================ -->
+  <section id="testimonials" class="section">
+    <div class="container">
+      <div class="reveal">
+        <div class="section-label testi-section-label">WHAT THEY SAY</div>
+        <h2 class="section-headline">Don't take our word for it.</h2>
+        <p class="testi-sub">Real words from real students and parents.</p>
+      </div>
+
+      <!-- A) Video testimonials -->
+      <div class="testi-videos reveal">
+        <!-- REPLACE WITH VIDEO EMBED 1:
+          Remove the .testi-video-placeholder div and add an iframe embed, e.g.:
+          <iframe src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen style="width:100%;aspect-ratio:16/9;"></iframe>
+        -->
+        <div class="testi-video-card">
+          <div class="testi-video-placeholder">
+            <div class="testi-play">▶</div>
+          </div>
+          <div class="testi-video-caption">🎤 Student Testimonial — <!-- REPLACE WITH STUDENT NAME --></div>
+        </div>
+        <!-- REPLACE WITH VIDEO EMBED 2 -->
+        <div class="testi-video-card">
+          <div class="testi-video-placeholder">
+            <div class="testi-play">▶</div>
+          </div>
+          <div class="testi-video-caption">👨‍👩‍👧 Parent Testimonial — <!-- REPLACE WITH PARENT NAME --></div>
+        </div>
+      </div>
+
+      <!-- B) Text testimonial carousel -->
+      <div class="carousel-wrap reveal">
+        <div class="carousel-track" id="carousel-track">
+          <!-- REPLACE QUOTE 1: Update quote, name, and role below -->
+          <div class="quote-card">
+            <span class="quote-mark">"</span>
+            <p class="quote-text">The neuroscience session completely changed how I see my own body. Seeing my muscle signals live on a screen — that's not something you forget. I signed up for the full Arduino course immediately after.</p>
+            <div class="quote-author">Priya M.</div>
+            <div class="quote-role">Class 10 Student, Pune</div>
+          </div>
+          <!-- REPLACE QUOTE 2 -->
+          <div class="quote-card">
+            <span class="quote-mark">"</span>
+            <p class="quote-text">As a parent, I was skeptical — another tech class. But my son came home and built a sensor circuit himself in the first week. Sanket has a rare gift for making complex things feel possible for kids.</p>
+            <div class="quote-author">Rakesh D.</div>
+            <div class="quote-role">Parent, Pimpri-Chinchwad</div>
+          </div>
+          <!-- REPLACE QUOTE 3 -->
+          <div class="quote-card">
+            <span class="quote-mark">"</span>
+            <p class="quote-text">I joined the IoT bootcamp expecting theory lectures. Instead we built a live weather station by day two. The depth and pace were perfect. My final year project is now built on what I learned here.</p>
+            <div class="quote-author">Aarav S.</div>
+            <div class="quote-role">Engineering Student, Pune University</div>
+          </div>
+          <!-- REPLACE QUOTE 4 -->
+          <div class="quote-card">
+            <span class="quote-mark">"</span>
+            <p class="quote-text">We brought Siddham Robotics to our school for a one-day workshop and it was the most engaged our students have ever been. Teachers were watching with the same curiosity as the kids. Highly recommend.</p>
+            <div class="quote-author">Principal Anjali K.</div>
+            <div class="quote-role">CBSE School, Chinchwad</div>
+          </div>
+          <!-- REPLACE QUOTE 5 -->
+          <div class="quote-card">
+            <span class="quote-mark">"</span>
+            <p class="quote-text">I'm a software developer and thought I knew enough about hardware. Sanket's electronics session showed me how wrong I was — and how much fun the right gaps can be to fill. Already planning to return.</p>
+            <div class="quote-author">Meghana R.</div>
+            <div class="quote-role">Software Developer, IT Professional</div>
+          </div>
+          <!-- REPLACE QUOTE 6 -->
+          <div class="quote-card">
+            <span class="quote-mark">"</span>
+            <p class="quote-text">My daughter was 12 when she attended the robotics workshop. Six months later she built her first line-following robot at home from YouTube tutorials. That curiosity came from here.</p>
+            <div class="quote-author">Suresh &amp; Kavita P.</div>
+            <div class="quote-role">Parents, Wakad, Pune</div>
+          </div>
+        </div>
+      </div>
+      <div class="carousel-controls reveal">
+        <button class="carousel-btn" id="carousel-prev" aria-label="Previous testimonial">←</button>
+        <button class="carousel-btn" id="carousel-next" aria-label="Next testimonial">→</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ============================================================
+       SECTION 9 — CONTACT / ENQUIRY FORM
+  ============================================================ -->
+  <section id="contact" class="section">
+    <div class="container">
+      <div class="reveal" style="margin-bottom:48px;">
+        <div class="section-label">LET'S TALK</div>
+        <h2 class="section-headline contact-headline">Bring Siddham Robotics to your students.</h2>
+        <p class="contact-hindi">"Bas ek message door hain hum."</p>
+        <p class="contact-hindi-trans">We're just one message away.</p>
+      </div>
+
+      <div class="contact-grid">
+        <!-- Left: Contact info -->
+        <div class="contact-info-card glass reveal">
+          <div class="contact-info-title">Get in Touch</div>
+
+          <div class="contact-row">
+            <span class="contact-icon">📧</span>
+            <div class="contact-detail">
+              <a href="mailto:siddhamroboticsinitiatives@gmail.com">siddhamroboticsinitiatives@gmail.com</a>
+            </div>
+          </div>
+          <div class="contact-row">
+            <span class="contact-icon">📍</span>
+            <div class="contact-detail">
+              Pimpri-Chinchwad, Pune, Maharashtra<br>
+              <span style="color:var(--muted);font-size:0.84rem;">Available Pan-India &amp; Online</span>
+            </div>
+          </div>
+          <div class="contact-row">
+            <span class="contact-icon">🌐</span>
+            <div class="contact-detail">
+              Online sessions available across all time zones
+            </div>
+          </div>
+          <div class="contact-row">
+            <span class="contact-icon">📱</span>
+            <div class="contact-detail">
+              <!-- REPLACE WITH WHATSAPP NUMBER -->
+              <a href="https://wa.me/[WHATSAPP_NUMBER]?text=Hi%20Sanket!%20I%20want%20to%20know%20more%20about%20Siddham%20Robotics%20sessions." target="_blank" rel="noopener" style="color:var(--cyan);">
+                WhatsApp us directly →
+              </a>
+            </div>
+          </div>
+
+          <!-- Social icons -->
+          <div class="social-icons">
+            <!-- REPLACE WITH ACTUAL INSTAGRAM URL -->
+            <a href="https://instagram.com/[INSTAGRAM_HANDLE]" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram" title="Instagram">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+            <!-- REPLACE WITH ACTUAL LINKEDIN URL -->
+            <a href="https://linkedin.com/in/[LINKEDIN_HANDLE]" target="_blank" rel="noopener" class="social-icon" aria-label="LinkedIn" title="LinkedIn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+            <!-- REPLACE WITH ACTUAL YOUTUBE URL -->
+            <a href="https://youtube.com/@[YOUTUBE_HANDLE]" target="_blank" rel="noopener" class="social-icon" aria-label="YouTube" title="YouTube">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            </a>
+            <!-- REPLACE WITH ACTUAL WHATSAPP NUMBER -->
+            <a href="https://wa.me/[WHATSAPP_NUMBER]?text=Hi%20Sanket!%20I%20want%20to%20know%20more%20about%20Siddham%20Robotics%20sessions." target="_blank" rel="noopener" class="social-icon" aria-label="WhatsApp" title="WhatsApp" style="color:#25D366;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: Enquiry form -->
+        <div class="contact-form-card glass reveal reveal-delay-2">
+
+          <!-- Success message (hidden by default) -->
+          <div class="form-success" id="form-success">
+            <div class="form-success-emoji">🙏</div>
+            <div class="form-success-title">Thank You!</div>
+            <p class="form-success-text">We've received your message and will be in touch within 24 hours. Looking forward to building something amazing together.</p>
+          </div>
+
+          <!--
+            FORM SETUP:
+            For Netlify Forms: Keep the `netlify` attribute and `netlify-honeypot` as-is.
+            For Formspree: Replace action="" with action="https://formspree.io/f/YOUR_FORM_ID" and remove `netlify` attribute.
+          -->
+          <form
+            id="enquiry-form"
+            name="siddham-enquiry"
+            netlify
+            netlify-honeypot="bot-field"
+            data-netlify="true"
+          >
+            <input type="hidden" name="form-name" value="siddham-enquiry" />
+            <!-- Honeypot field (anti-spam) -->
+            <p style="display:none;"><label>Don't fill this out: <input name="bot-field" /></label></p>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="Your full name" required />
+              </div>
+              <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="your@email.com" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" placeholder="+91 XXXXX XXXXX" />
+            </div>
+
+            <div class="form-group">
+              <label for="who">I am a...</label>
+              <select id="who" name="who" required>
+                <option value="" disabled selected>Select your role</option>
+                <option>School / College Representative</option>
+                <option>Parent of a Student</option>
+                <option>College Student</option>
+                <option>Working Professional</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="interest">I'm interested in...</label>
+              <select id="interest" name="interest" required>
+                <option value="" disabled selected>Select a format</option>
+                <option>One-time Workshop / Seminar</option>
+                <option>Bootcamp (5 Days)</option>
+                <option>Monthly Course (4–8 weeks)</option>
+                <option>Full Course (3–6 months)</option>
+                <option>Not sure yet — let's talk</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="message">Tell us more</label>
+              <textarea id="message" name="message" placeholder="Tell us about your school, your child's age, what you'd like to learn, or anything else that helps us tailor the right program for you..."></textarea>
+            </div>
+
+            <button type="submit" class="form-submit">Send Enquiry →</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer>
+    <div class="footer-grid">
+      <!-- Left: Brand -->
+      <div>
+        <div class="footer-logo-name">Siddham Robotics</div>
+        <p class="footer-tagline">
+          Because curiosity doesn't live in one city. And neither do we. 🌍
+        </p>
+      </div>
+
+      <!-- Center: Quick links -->
+      <div>
+        <div class="footer-col-title">Quick Links</div>
+        <ul class="footer-links">
+          <li><a href="#hero">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#what-we-teach">What We Teach</a></li>
+          <li><a href="#sessions">Session Formats</a></li>
+          <li><a href="#testimonials">Testimonials</a></li>
+          <li><a href="#contact">Contact &amp; Enquiry</a></li>
+        </ul>
+      </div>
+
+      <!-- Right: Social -->
+      <div>
+        <div class="footer-col-title">Find Us</div>
+        <div class="footer-social-grid">
+          <!-- REPLACE WITH ACTUAL INSTAGRAM URL -->
+          <a href="https://instagram.com/[INSTAGRAM_HANDLE]" target="_blank" rel="noopener" class="footer-social-icon" aria-label="Instagram">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+          <!-- REPLACE WITH ACTUAL LINKEDIN URL -->
+          <a href="https://linkedin.com/in/[LINKEDIN_HANDLE]" target="_blank" rel="noopener" class="footer-social-icon" aria-label="LinkedIn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          <!-- REPLACE WITH ACTUAL YOUTUBE URL -->
+          <a href="https://youtube.com/@[YOUTUBE_HANDLE]" target="_blank" rel="noopener" class="footer-social-icon" aria-label="YouTube">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+          <!-- REPLACE WITH ACTUAL WHATSAPP NUMBER -->
+          <a href="https://wa.me/[WHATSAPP_NUMBER]?text=Hi%20Sanket!%20I%20want%20to%20know%20more%20about%20Siddham%20Robotics%20sessions." target="_blank" rel="noopener" class="footer-social-icon" aria-label="WhatsApp" style="color:#25D366;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      © 2025 Siddham Robotics &nbsp;·&nbsp; Founded by Sanket Jain &nbsp;·&nbsp; Built with curiosity ⚡
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       FLOATING: WHATSAPP BUTTON
+  ============================================================ -->
+  <!-- REPLACE [WHATSAPP_NUMBER] with actual number, e.g. 919876543210 -->
+  <a
+    id="whatsapp-float"
+    href="https://wa.me/[WHATSAPP_NUMBER]?text=Hi%20Sanket!%20I%20want%20to%20know%20more%20about%20Siddham%20Robotics%20sessions."
+    target="_blank"
+    rel="noopener"
+    aria-label="Chat on WhatsApp"
+    title="Chat on WhatsApp"
+  >
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+    </svg>
+  </a>
+
+  <!-- ============================================================
+       FLOATING: SCROLL TO TOP
+  ============================================================ -->
+  <button id="scroll-top" aria-label="Scroll to top" title="Back to top">↑</button>
+
+  <!-- ============================================================
+       JAVASCRIPT
+  ============================================================ -->
+  <script>
+  (function() {
+    'use strict';
+
+    /* ── PARTICLE / NEURAL NETWORK CANVAS ──────────────────── */
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [], animId;
+    const PARTICLE_COUNT = 60;
+    const MAX_DIST = 140;
+    const PARTICLE_SPEED = 0.35;
+
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+
+    function Particle() {
+      this.x = Math.random() * W;
+      this.y = Math.random() * H;
+      this.vx = (Math.random() - 0.5) * PARTICLE_SPEED;
+      this.vy = (Math.random() - 0.5) * PARTICLE_SPEED;
+      this.r = Math.random() * 1.8 + 0.6;
+      this.alpha = Math.random() * 0.4 + 0.15;
+    }
+
+    Particle.prototype.update = function() {
+      this.x += this.vx;
+      this.y += this.vy;
+      if (this.x < 0 || this.x > W) this.vx *= -1;
+      if (this.y < 0 || this.y > H) this.vy *= -1;
+    };
+
+    function initParticles() {
+      particles = [];
+      for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+    }
+
+    function drawParticles() {
+      ctx.clearRect(0, 0, W, H);
+      // Draw connections
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < MAX_DIST) {
+            const opacity = (1 - dist / MAX_DIST) * 0.18;
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(0,229,255,${opacity})`;
+            ctx.lineWidth = 0.8;
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+      // Draw particles
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,229,255,${p.alpha})`;
+        ctx.fill();
+        p.update();
+      });
+    }
+
+    function animate() {
+      drawParticles();
+      animId = requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', () => {
+      resize();
+      initParticles();
+    });
+
+    resize();
+    initParticles();
+    animate();
+
+    /* ── NAVBAR: scroll state ───────────────────────────────── */
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+    }, { passive: true });
+
+    /* ── HAMBURGER MENU ─────────────────────────────────────── */
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    hamburger.addEventListener('click', () => {
+      const open = mobileMenu.classList.toggle('open');
+      hamburger.classList.toggle('active', open);
+      hamburger.setAttribute('aria-expanded', String(open));
+    });
+
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        hamburger.classList.remove('active');
+        hamburger.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    /* ── TYPEWRITER EFFECT ──────────────────────────────────── */
+    const keywords = [
+      'ROBOTICS',
+      'NEUROSCIENCE',
+      'ELECTRONICS',
+      'ARDUINO',
+      'ARTIFICIAL INTELLIGENCE',
+      'IoT',
+      'PYTHON',
+      'DRONES',
+      '3D PRINTING'
+    ];
+    const typeEl = document.getElementById('typewriter-text');
+    let kIdx = 0, charIdx = 0, deleting = false, typePause = false;
+
+    function typeStep() {
+      const word = keywords[kIdx];
+      if (typePause) {
+        typePause = false;
+        deleting = true;
+        setTimeout(typeStep, 1200);
+        return;
+      }
+      if (!deleting) {
+        typeEl.textContent = word.slice(0, charIdx + 1);
+        charIdx++;
+        if (charIdx === word.length) {
+          typePause = true;
+          setTimeout(typeStep, 80);
+        } else {
+          setTimeout(typeStep, 90);
+        }
+      } else {
+        typeEl.textContent = word.slice(0, charIdx - 1);
+        charIdx--;
+        if (charIdx === 0) {
+          deleting = false;
+          kIdx = (kIdx + 1) % keywords.length;
+          setTimeout(typeStep, 400);
+        } else {
+          setTimeout(typeStep, 48);
+        }
+      }
+    }
+    setTimeout(typeStep, 800);
+
+    /* ── SCROLL REVEAL (IntersectionObserver) ───────────────── */
+    const reveals = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    reveals.forEach(el => revealObserver.observe(el));
+
+    /* ── STAT COUNTERS ──────────────────────────────────────── */
+    const statEls = document.querySelectorAll('.stat-number[data-target]');
+    let statsTriggered = false;
+
+    function animateCounter(el) {
+      const target = parseInt(el.getAttribute('data-target'), 10);
+      const suffix = el.getAttribute('data-suffix') || '';
+      const dataText = el.getAttribute('data-text');
+      if (dataText) { el.textContent = dataText; return; }
+      const duration = 1600;
+      const start = performance.now();
+      function tick(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.floor(ease * target) + suffix;
+        if (progress < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    const statsSection = document.querySelector('.hero-stats');
+    if (statsSection) {
+      const statsObserver = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && !statsTriggered) {
+          statsTriggered = true;
+          statEls.forEach(el => animateCounter(el));
+          statsObserver.disconnect();
+        }
+      }, { threshold: 0.5 });
+      statsObserver.observe(statsSection);
+    }
+
+    /* ── GALLERY LIGHTBOX ───────────────────────────────────── */
+    const lightbox = document.getElementById('lightbox');
+    const lightboxClose = document.getElementById('lightbox-close');
+
+    document.querySelectorAll('.gallery-item').forEach(item => {
+      item.addEventListener('click', () => {
+        // When real images are added, use: lightboxImg.src = item.querySelector('img').src;
+        lightbox.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox();
+    });
+
+    /* ── TESTIMONIAL CAROUSEL ───────────────────────────────── */
+    const track = document.getElementById('carousel-track');
+    const prevBtn = document.getElementById('carousel-prev');
+    const nextBtn = document.getElementById('carousel-next');
+    let carouselIndex = 0;
+    let carouselAutoplay;
+    const CARDS_VISIBLE = () => window.innerWidth < 500 ? 1 : window.innerWidth < 900 ? 1 : 2;
+    const CARD_WIDTH = () => {
+      const card = track.children[0];
+      if (!card) return 360;
+      return card.offsetWidth + 20; // card width + gap
+    };
+
+    function getMaxIndex() {
+      return Math.max(0, track.children.length - CARDS_VISIBLE());
+    }
+
+    function goToSlide(idx) {
+      carouselIndex = Math.max(0, Math.min(idx, getMaxIndex()));
+      track.style.transform = `translateX(-${carouselIndex * CARD_WIDTH()}px)`;
+    }
+
+    prevBtn.addEventListener('click', () => {
+      goToSlide(carouselIndex - 1);
+      resetAutoplay();
+    });
+    nextBtn.addEventListener('click', () => {
+      if (carouselIndex >= getMaxIndex()) goToSlide(0);
+      else goToSlide(carouselIndex + 1);
+      resetAutoplay();
+    });
+
+    function startAutoplay() {
+      carouselAutoplay = setInterval(() => {
+        if (carouselIndex >= getMaxIndex()) goToSlide(0);
+        else goToSlide(carouselIndex + 1);
+      }, 4000);
+    }
+
+    function resetAutoplay() {
+      clearInterval(carouselAutoplay);
+      startAutoplay();
+    }
+
+    const carouselWrap = document.querySelector('.carousel-wrap');
+    if (carouselWrap) {
+      carouselWrap.addEventListener('mouseenter', () => clearInterval(carouselAutoplay));
+      carouselWrap.addEventListener('mouseleave', startAutoplay);
+    }
+
+    startAutoplay();
+
+    /* ── CONTACT FORM — AJAX SUBMIT ─────────────────────────── */
+    const form = document.getElementById('enquiry-form');
+    const formSuccess = document.getElementById('form-success');
+
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = form.querySelector('.form-submit');
+        submitBtn.textContent = 'Sending…';
+        submitBtn.disabled = true;
+
+        const formData = new FormData(form);
+
+        try {
+          /* Netlify Forms submission */
+          const response = await fetch('/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams(formData).toString()
+          });
+
+          if (response.ok || response.status === 200) {
+            form.style.display = 'none';
+            formSuccess.classList.add('show');
+          } else {
+            throw new Error('Form submission failed');
+          }
+        } catch (err) {
+          /* Fallback: direct form submit */
+          form.submit();
+        }
+      });
+    }
+
+    /* ── SCROLL TO TOP BUTTON ───────────────────────────────── */
+    const scrollTopBtn = document.getElementById('scroll-top');
+    window.addEventListener('scroll', () => {
+      scrollTopBtn.classList.toggle('show', window.scrollY > 200);
+    }, { passive: true });
+
+    scrollTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    /* ── SMOOTH SCROLL FOR ALL NAV LINKS ────────────────────── */
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          const navH = navbar.offsetHeight;
+          const targetY = target.getBoundingClientRect().top + window.scrollY - navH - 12;
+          window.scrollTo({ top: targetY, behavior: 'smooth' });
+        }
+      });
+    });
+
+  })();
+  </script>
+
+</body>
+</html>
